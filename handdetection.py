@@ -4,6 +4,9 @@ from mediapipe.tasks.python import vision # Imports The Vision from Marvel
 import cv2 # Camera stuff
 from time import sleep
 from time import time
+import warnings
+warnings.filterwarnings("ignore")
+
 print("imports successful")
 
 # This can change depending on the camera but it has to be a standard resolution
@@ -65,6 +68,13 @@ with vision.HandLandmarker.create_from_options(options) as detector:
             cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
         
         mpImage = mp.Image(image_format=mp.ImageFormat.SRGB, data=image) # Convert from numpy image to mediapipe image for AI
+        print("sssssssssssssssssssssssssssssssss")
         detector.detect_async(mpImage, int(time() * 1000)) # Sends the frame to the AI, which does its thing and calls processResult with the result
+        print("kkkkk")
         if currentFrame is not None: cv2.imshow("Frame", currentFrame) # This needs to happen on the main thread
-        cv2.waitKey(1)
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+# Release the capture when everything is done
+cap.release()
+cv2.destroyAllWindows()
