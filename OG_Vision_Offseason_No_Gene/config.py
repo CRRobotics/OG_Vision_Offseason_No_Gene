@@ -65,9 +65,6 @@ class Finger:
     def retrieveCoordsFromAI(self):
         pass
     
-    def die(self):
-        self.alive = False
-    
     def move(self):
         pass
     
@@ -97,8 +94,8 @@ class Finger:
 
 class Enemy:
     def __init__(self, shape, color, xCoord, yCoord):
-        self.xCoord = 639
-        self.yCoord = 639
+        self.xCoord = xCoord
+        self.yCoord = yCoord
         self.color = color
         self.shape = shape
         self.alive = True
@@ -153,15 +150,15 @@ class Hexagon(Enemy):
             xCoord = finger.getXCoord()
             yCoord = finger.getYCoord()
             distance = math.sqrt(xCoord ** 2 + yCoord ** 2)
-            if lowestDistance > distance:
+            if lowestDistance > distance and finger.getColor() != self.color:
                 lowestDistance = distance
                 closestFinger = finger
         return closestFinger
                 
     def move(self, fingers): #can fingers not be a parameter here, cause it feels like it could
         finger = self.findClosestEnemy(fingers)
-        xDistance = self.getXCoord() - finger.getXCoord()
-        yDistance = self.getYCoord() - finger.getYCoord()
+        xDistance = finger.getXCoord() - self.getXCoord()
+        yDistance = finger.getYCoord() - self.getYCoord()
         hypotenuse = math.sqrt(xDistance ** 2 + yDistance ** 2)
         xChange = xDistance / hypotenuse
         yChange = yDistance / hypotenuse
@@ -180,21 +177,18 @@ class Diamond(Enemy):
         self.direction = direction
     
     def atEdge(self):
-        if self.getCoords()[0] == rightOfScreenCoord or self.getCoords()[0] == leftOfScreenCoord:
+        if self.getXCoord() >= rightOfScreenCoord or self.getXCoord() <= leftOfScreenCoord:
             self.direction = 180 - self.direction 
-        elif self.getCoords()[1] == bottomOfScreenCoord or self.getCoords()[1] == topOfScreenCoord:
+        elif self.getYCoord() >= bottomOfScreenCoord or self.getYCoord() <= topOfScreenCoord:
             self.direction *= -1
             
-    def move(self): # might get out of bounds and so not turn and be unable to move and everything breaks
+    def move(self, fingers): # might get out of bounds and so not turn and be unable to move and everything breaks
         self.atEdge()
-        self.changeXCoord(math.acos(self.alivedirection * math.pi / 180))
-        self.changeYCoord(math.asin(self.direction * math.pi / 180))
+        self.changeXCoord(math.cos(self.alivedirection * math.pi / 180))
+        self.changeYCoord(math.sin(self.direction * math.pi / 180))
         
     def drawYourself(self):
         pass
-
-
-
 
 
 thumb = Finger("Red")
@@ -221,9 +215,18 @@ def summonEnemies():
             color = "Green"
         elif colorNum == 4:
             color = "Blue"
-        xCoord = randint(0, rightOfScreenCoord)
-        yCoord = randint(0, bottomOfScreenCoord)
-        
+        if randint(0, 1) == 0:
+            xCoord = randint(0, rightOfScreenCoord)
+            if randint(0, 1) == 0:
+                yCoord = topOfScreenCoord
+            else:
+                yCoord = bottomOfScreenCoord
+        else:
+            yCoord = randint(0, rightOfScreenCoord)
+            if randint(0, 1) == 0:
+                xCoord = leftOfScreenCoord
+            else:
+                xCoord = rightOfScreenCoord
         if randint(0, chanceOfHexagon) == 0:
             tempEnemie = Hexagon(color, xCoord, yCoord)
             enemies.append(tempEnemie)
@@ -248,13 +251,13 @@ def main():
         if counter >= 5:
             stillAlive = False
         for enemie in enemies:
-            enemie.move()
+            enemie.move(fingers)
             enemies.drawYourself()
         sleep(.001)
     gameOver()
     print("hi. you do be dead though. So sad.")
     
-#still need: way to have things die;
+#scope might be a issue here
     
 main()
 
