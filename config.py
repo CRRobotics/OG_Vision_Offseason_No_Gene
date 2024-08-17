@@ -1,15 +1,27 @@
 #import cv2
 #import os
 import math
+import random
+from time import sleep
 
-possibleColors = ["Green", "Blue", "Red", "Yellow", "Orange"]
-possibleShapes = ["Diamond", "Hexagon"]
+topOfScreenCoord = 0
+bottomOfScreenCoord = 480
+rightOfScreenCoord = 640
+leftOfScreenCoord = 0
 
+chanceOfSpawningEnemie = 10 # meaning one in ten chance
+chanceOfHexagon = 3 # meaning one in 3
 
-topOfScreenCoord = 639
-bottomOfScreenCoord = -639
-rightOfScreenCoord = 639
-leftOfScreenCoord = -639
+hexagonRadius = 639
+diamondSideLength = 639
+
+colors = {
+    "Red" = (255, 0, 0)
+    "Orange" = (255, 165, 0)
+    "Yellow" = (255, 25, 0)
+    "Green" = (0, 255, 0)
+    "Blue" = (0, 0, 255)
+}
 
 #probably need to test everything somehow, and look into fixing the stuff i commented on 
 
@@ -52,17 +64,33 @@ class Finger:
     def retrieveCoordsFromAI(self):
         pass
     
+    def die(self):
+        self.alive = false
+    
     def move(self):
         pass
+    
+    # game methods
+    def drawYourself(self):
+        pass
+    
+    def touchingEnemie(self, enemies):
+        for enemie in enemies:
+            
+            #potential glithc: finger is before enemie, and so might not have access to the methods and break things
+    
+    
+    
 
 
 
 class Enemy:
-    def __init__(self, color):
+    def __init__(self, shape, color, xCoord, yCoord):
         self.xCoord = 639
         self.yCoord = 639
         self.color = color
         self.shape = shape
+        self.alive = true
         
     # accessors
     def getCoords(self):
@@ -92,12 +120,20 @@ class Enemy:
         
     def changeYCoord(self, change):
         self.yCoord += change
+    
+    def die(self):
+        self.alive = false
+        
+    # game methods
+    def drawYourself(self):
+        pass
+
         
         
         
 class Hexagon(Enemy):
-    def __init__(self, color):
-        Enemy.__init__(color, "Hexagon")
+    def __init__(self, color, xCoord, yCoord):
+        Enemy.__init__(color, "Hexagon", xCoord, yCoord)
     
     def findClosestEnemy(self, fingers): #this is probably not the best way to do this
         lowestDistance = 639000
@@ -121,12 +157,16 @@ class Hexagon(Enemy):
         self.changeXCoord(xChange)
         self.changeYCoord(yChange)
     
+    def drawYourself(self):
+        pass
+
+    
     
     
 class Diamond(Enemy):
-    def __init__(self, color):
+    def __init__(self, color, xCoord, yCoord, direction):
         Enemy.__init__(color, "Diamond")
-        self.direction = 0
+        self.direction = direction
     
     def atEdge(self):
         if self.getCoords()[0] == rightOfScreenCoord or self.getCoords()[0] == leftOfScreenCoord:
@@ -139,22 +179,71 @@ class Diamond(Enemy):
         self.changeXCoord(math.acos(direction * math.pi / 180))
         self.changeYCoord(math.asin(direction * math.pi / 180))
         
+    def drawYourself(self):
+        pass
+
+    def get
+
+
+
+
+thumb = Finger("Red")
+pointer = Finger("Orange")
+middle = Finger("Yellow")
+ring = Finger("Green")
+pinkie = Finger("Blue")
+
+fingers = [thumb, pointer, middle, ring, pinkie]
+enemies = []
+
+stillAlive = true
 
 def summonEnemies():
+    global enemies
+    if randint(0, chanceOfSpawningEnemie) == 0:
+        colorNum = randint(0, 5)
+        color = "Red"
+        if colorNum == 1:
+            color = "Orange"
+        elif colorNum == 2:
+            color = "Yellow"
+        elif colorNum == 3:
+            color = "Green"
+        elif colorNum == 4:
+            color = "Blue"
+        xCoord = randint(0, rightOfScreen)
+        yCoord = randint(0, bottomOfScreen)
+        
+        if randint(0, changeOfHexagon) == 0:
+            tempEnemie = Hexagon(color, xCoord, yCoord)
+            enemies.append(tempEnemie)
+        else:
+            direction = randint(0, 360)
+            tempEnemie = Diamond(color, Xcoord, Ycoord, direction)
+            enemies.append(tempEnemie)
+
+def gameOver():
     pass
-        
-        
+
 def main():
-    fingers = [Finger("Blue") for i in range(5)]
-    print("hi")
-    enemies = []
-    while True:
+    global stillAlive
+    while stillAlive:
+        summonEnemies()
+        counter = 0
         for finger in fingers:
             finger.retrieveCoordsFromAI()
             finger.move()
+            if finger.isAlive() == false:
+                counter += 1
+        if counter >= 5:
+            stillAlive = false
         for enemie in enemies:
             enemie.move()
-        
+            enemies.drawYourself()
+        sleep(.001)
+    gameOver()
+    print("hi. you do be dead though. So sad.")
     
+#still need: way to have things die;
     
 main()
