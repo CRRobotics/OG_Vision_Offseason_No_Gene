@@ -1,26 +1,27 @@
 #import cv2
 #import os
 import math
-import random
+from random import randint
 from time import sleep
 
 topOfScreenCoord = 0
-bottomOfScreenCoord = 480
-rightOfScreenCoord = 640
+bottomOfScreenCoord = 479
+rightOfScreenCoord = 639 # Actually correct
 leftOfScreenCoord = 0
 
-chanceOfSpawningEnemie = 10 # meaning one in ten chance
-chanceOfHexagon = 3 # meaning one in 3
+chanceOfSpawningEnemy = 9 # meaning one in ten chance
+chanceOfHexagon = 2 # meaning one in 3
 
 hexagonRadius = 639
-diamondSideLength = 639
+diamondRadius = 639
+circleRadius = 639
 
 colors = {
-    "Red" = (255, 0, 0)
-    "Orange" = (255, 165, 0)
-    "Yellow" = (255, 25, 0)
-    "Green" = (0, 255, 0)
-    "Blue" = (0, 0, 255)
+    "Red" : (255, 0, 0),
+    "Orange" : (255, 165, 0),
+    "Yellow" : (255, 25, 0),
+    "Green" : (0, 255, 0),
+    "Blue" : (0, 0, 255)
 }
 
 #probably need to test everything somehow, and look into fixing the stuff i commented on 
@@ -65,7 +66,7 @@ class Finger:
         pass
     
     def die(self):
-        self.alive = false
+        self.alive = False
     
     def move(self):
         pass
@@ -74,9 +75,19 @@ class Finger:
     def drawYourself(self):
         pass
     
-    def touchingEnemie(self, enemies):
-        for enemie in enemies:
-            
+    def touchingEnemy(self, enemies):
+        enemyXCoord = 0
+        enemyYCoord = 0
+        for enemy in enemies:
+            enemyXCoord = enemy.getXCoord()
+            enemyYCoord = enemy.getYCoord()
+            if enemy.getShape() == "Hexagon":
+                if math.sqrt((enemyXCoord - self.xCoord) ** 2 + (enemyYCoord - self.yCoord) ** 2) <= circleRadius + hexagonRadius:
+                    self.alive = False
+            else:
+                if math.abs(self.xCoord - enemyXCoord) + math.abs(self.yCoord - enemyYCoord) <= diamondRadius + circleRadius * math.sqrt(2):
+                    self.alive = False
+
             #potential glithc: finger is before enemie, and so might not have access to the methods and break things
     
     
@@ -90,7 +101,7 @@ class Enemy:
         self.yCoord = 639
         self.color = color
         self.shape = shape
-        self.alive = true
+        self.alive = True
         
     # accessors
     def getCoords(self):
@@ -122,7 +133,7 @@ class Enemy:
         self.yCoord += change
     
     def die(self):
-        self.alive = false
+        self.alive = False
         
     # game methods
     def drawYourself(self):
@@ -141,7 +152,7 @@ class Hexagon(Enemy):
         for finger in fingers:
             xCoord = finger.getXCoord()
             yCoord = finger.getYCoord()
-            distance = (xCoord ** 2 + yCoord ** 2) ** (1/2)
+            distance = math.sqrt(xCoord ** 2 + yCoord ** 2)
             if lowestDistance > distance:
                 lowestDistance = distance
                 closestFinger = finger
@@ -151,7 +162,7 @@ class Hexagon(Enemy):
         finger = self.findClosestEnemy(fingers)
         xDistance = self.getXCoord() - finger.getXCoord()
         yDistance = self.getYCoord() - finger.getYCoord()
-        hypotenuse = (xDistance ** 2 + yDistance ** 2) ** (1/2)
+        hypotenuse = math.sqrt(xDistance ** 2 + yDistance ** 2)
         xChange = xDistance / hypotenuse
         yChange = yDistance / hypotenuse
         self.changeXCoord(xChange)
@@ -176,13 +187,12 @@ class Diamond(Enemy):
             
     def move(self): # might get out of bounds and so not turn and be unable to move and everything breaks
         self.atEdge()
-        self.changeXCoord(math.acos(direction * math.pi / 180))
-        self.changeYCoord(math.asin(direction * math.pi / 180))
+        self.changeXCoord(math.acos(self.alivedirection * math.pi / 180))
+        self.changeYCoord(math.asin(self.direction * math.pi / 180))
         
     def drawYourself(self):
         pass
 
-    def get
 
 
 
@@ -196,12 +206,12 @@ pinkie = Finger("Blue")
 fingers = [thumb, pointer, middle, ring, pinkie]
 enemies = []
 
-stillAlive = true
+stillAlive = True
 
 def summonEnemies():
     global enemies
-    if randint(0, chanceOfSpawningEnemie) == 0:
-        colorNum = randint(0, 5)
+    if randint(0, chanceOfSpawningEnemy) == 0:
+        colorNum = randint(0, 4)
         color = "Red"
         if colorNum == 1:
             color = "Orange"
@@ -211,15 +221,15 @@ def summonEnemies():
             color = "Green"
         elif colorNum == 4:
             color = "Blue"
-        xCoord = randint(0, rightOfScreen)
-        yCoord = randint(0, bottomOfScreen)
+        xCoord = randint(0, rightOfScreenCoord)
+        yCoord = randint(0, bottomOfScreenCoord)
         
-        if randint(0, changeOfHexagon) == 0:
+        if randint(0, chanceOfHexagon) == 0:
             tempEnemie = Hexagon(color, xCoord, yCoord)
             enemies.append(tempEnemie)
         else:
-            direction = randint(0, 360)
-            tempEnemie = Diamond(color, Xcoord, Ycoord, direction)
+            direction = randint(0, 359)
+            tempEnemie = Diamond(color, xCoord, yCoord, direction)
             enemies.append(tempEnemie)
 
 def gameOver():
@@ -233,10 +243,10 @@ def main():
         for finger in fingers:
             finger.retrieveCoordsFromAI()
             finger.move()
-            if finger.isAlive() == false:
+            if finger.isAlive() == False:
                 counter += 1
         if counter >= 5:
-            stillAlive = false
+            stillAlive = False
         for enemie in enemies:
             enemie.move()
             enemies.drawYourself()
@@ -247,3 +257,7 @@ def main():
 #still need: way to have things die;
     
 main()
+
+
+
+
