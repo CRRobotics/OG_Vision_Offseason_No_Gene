@@ -4,6 +4,7 @@ import numpy as np
 # Open the default camera (usually the first one)
 cap = cv2.VideoCapture(0)
 
+from config import *
 # Check if the camera opened successfully
 if not cap.isOpened():
     print("Error: Could not open camera.")
@@ -86,8 +87,11 @@ def draw_diamond(frame, coordinates_on_the_screen: tuple, size: int, color: tupl
 while True:
     # Capture frame-by-frame
     ret, frame = cap.read()
-    draw_hexagon(frame, (100,100), 30, (255,0,0))
-    draw_diamond(frame, (300,100), 30, (0,0,255))
+    if ret:
+        print("have frame")
+    # draw_hexagon(frame, (100,100), 30, (255,0,0))
+    # draw_diamond(frame, (300,100), 30, (0,0,255))
+    config_main(frame)
 
 
     # show_enemy(frame, enemy)

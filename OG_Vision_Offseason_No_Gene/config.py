@@ -1,5 +1,6 @@
-#import cv2
+import cv2
 #import os
+import numpy as np
 import math
 from random import randint
 from time import sleep
@@ -21,9 +22,9 @@ chanceOfHexagon = 2 # meaning one in 3
 
 
 
-hexagonRadius = 639
-diamondRadius = 639
-circleRadius = 639
+hexagonRadius = 2
+diamondRadius = 2
+circleRadius = 2
 
 
 
@@ -46,7 +47,7 @@ colors = {
 class Finger:
     def __init__(self, color):
        self.xCoord = 639
-       self.yCooord = 639
+       self.yCoord = 638
        self.alive = True
        self.color = color # potentially need to have a list of colors and throw an exception if it's not an accepted color
       
@@ -182,7 +183,7 @@ class Enemy:
       
 class Hexagon(Enemy):
    def __init__(self, color, xCoord, yCoord):
-       Enemy.__init__(color, "Hexagon", xCoord, yCoord)
+       Enemy.__init__(self, "Hexagon", color, xCoord, yCoord)
   
    def findClosestEnemy(self, fingers): #this is probably not the best way to do this
        lowestDistance = 639000
@@ -201,13 +202,40 @@ class Hexagon(Enemy):
        xDistance = self.getXCoord() - finger.getXCoord()
        yDistance = self.getYCoord() - finger.getYCoord()
        hypotenuse = math.sqrt(xDistance ** 2 + yDistance ** 2)
-       xChange = xDistance / hypotenuse
-       yChange = yDistance / hypotenuse
+       if hypotenuse != 0:
+        xChange = xDistance / hypotenuse
+        yChange = yDistance / hypotenuse
+       else:
+           print("DEAATHTHTHT ITS DIVIDE BY ZERO")
        self.changeXCoord(xChange)
        self.changeYCoord(yChange)
   
-   def drawYourself(self):
-       pass
+   def drawYourself(self, frame):
+    # Calculate the six vertices of the hexagon
+    vertices = []
+    for i in range(6):
+        angle = 2 * np.pi / 6 * i
+        x = int(self.xCoord + hexagonRadius * np.cos(angle))
+        y = int(self.yCoord + hexagonRadius * np.sin(angle))
+        vertices.append((x, y))
+
+    # Convert vertices to a numpy array
+    vertices = np.array(vertices, np.int32)
+    vertices = vertices.reshape((-1, 1, 2))
+
+    # Create a copy of the original frame to draw the filled hexagon
+    overlay = frame.copy()
+
+    # Fill the hexagon on the overlay
+    cv2.fillPoly(overlay, [vertices], self.color)
+
+    # Blend the overlay with the original frame using alpha transparency
+    alpha = 0.5  # Set transparency level to 0.5
+    cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0, frame)
+
+    # Optionally, you can still draw the border
+    cv2.polylines(frame, [vertices], isClosed=True, color=self.color, thickness=2)
+       
 
 
 
@@ -217,7 +245,7 @@ class Hexagon(Enemy):
   
 class Diamond(Enemy):
    def __init__(self, color, xCoord, yCoord, direction):
-       Enemy.__init__(color, "Diamond")
+       Enemy.__init__(self, "Diamond", color, xCoord, yCoord)
        self.direction = direction
   
    def atEdge(self):
@@ -226,13 +254,40 @@ class Diamond(Enemy):
        elif self.getCoords()[1] == bottomOfScreenCoord or self.getCoords()[1] == topOfScreenCoord:
            self.direction *= -1
           
-   def move(self): # might get out of bounds and so not turn and be unable to move and everything breaks
+   def move(self, fingers): # might get out of bounds and so not turn and be unable to move and everything breaks
        self.atEdge()
-       self.changeXCoord(math.acos(self.alivedirection * math.pi / 180))
-       self.changeYCoord(math.asin(self.direction * math.pi / 180))
+       self.changeXCoord(math.cos(self.direction * math.pi / 180))
+       self.changeYCoord(math.sin(self.direction * math.pi / 180))
       
-   def drawYourself(self):
-       pass
+   def drawYourself(self, frame):
+    # Calculate the four vertices of the diamond
+    vertices = [
+        (self.xCoord, self.yCoord - diamondRadius),  # Top
+        (self.xCoord + diamondRadius, self.yCoord),  # Right
+        (self.xCoord, self.yCoord + diamondRadius),  # Bottom
+        (self.xCoord - diamondRadius, self.yCoord)   # Left
+    ]
+
+    # Convert vertices to a numpy array
+    vertices = np.array(vertices, np.int32)
+    vertices = vertices.reshape((-1, 1, 2))
+
+    # Create a copy of the original frame to draw the filled diamond
+    overlay = frame.copy()
+
+    # Fill the diamond on the overlay
+    cv2.fillPoly(overlay, [vertices], self.color)
+
+    # Blend the overlay with the original frame using alpha transparency
+    alpha = 0.5  # Set transparency level to 0.5
+    cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0, frame)
+
+    # Optionally, you can still draw the border
+    cv2.polylines(frame, [vertices], isClosed=True, color=self.color, thickness=2)
+
+
+
+
 
 
 
@@ -277,15 +332,15 @@ def summonEnemies():
    global enemies
    if randint(0, chanceOfSpawningEnemy) == 0:
        colorNum = randint(0, 4)
-       color = "Red"
+       color = colors["Red"]
        if colorNum == 1:
-           color = "Orange"
+           color = colors["Orange"]
        elif colorNum == 2:
-           color = "Yellow"
+           color = colors["Yellow"]
        elif colorNum == 3:
-           color = "Green"
+           color = colors["Green"]
        elif colorNum == 4:
-           color = "Blue"
+           color = colors["Blue"]
        xCoord = randint(0, rightOfScreenCoord)
        yCoord = randint(0, bottomOfScreenCoord)
       
@@ -306,7 +361,7 @@ def gameOver():
 
 
 
-def main():
+def config_main(frame):
    global stillAlive
    while stillAlive:
        summonEnemies()
@@ -319,15 +374,15 @@ def main():
        if counter >= 5:
            stillAlive = False
        for enemie in enemies:
-           enemie.move()
-           enemies.drawYourself()
+           enemie.move(fingers)
+           enemie.drawYourself(frame)
        sleep(.001)
    gameOver()
    print("hi. you do be dead though. So sad.")
   
 #still need: way to have things die;
   
-main()
+
 
 
 
