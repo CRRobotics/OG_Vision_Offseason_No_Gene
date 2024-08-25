@@ -133,8 +133,8 @@ class Finger:
 
 class Enemy:
    def __init__(self, shape, color, xCoord, yCoord):
-       self.xCoord = 639
-       self.yCoord = 639
+       self.xCoord = xCoord
+       self.yCoord = yCoord
        self.color = color
        self.shape = shape
        self.alive = True
@@ -199,8 +199,8 @@ class Hexagon(Enemy):
               
    def move(self, fingers): #can fingers not be a parameter here, cause it feels like it could
        finger = self.findClosestEnemy(fingers)
-       xDistance = self.getXCoord() - finger.getXCoord()
-       yDistance = self.getYCoord() - finger.getYCoord()
+       xDistance = finger.getXCoord() -self.getXCoord()
+       yDistance = finger.getYCoord() - self.getYCoord()
        hypotenuse = math.sqrt(xDistance ** 2 + yDistance ** 2)
        if hypotenuse != 0:
         xChange = xDistance / hypotenuse
@@ -249,9 +249,9 @@ class Diamond(Enemy):
        self.direction = direction
   
    def atEdge(self):
-       if self.getCoords()[0] == rightOfScreenCoord or self.getCoords()[0] == leftOfScreenCoord:
+       if self.getCoords()[0] >= rightOfScreenCoord or self.getCoords()[0] <= leftOfScreenCoord:
            self.direction = 180 - self.direction
-       elif self.getCoords()[1] == bottomOfScreenCoord or self.getCoords()[1] == topOfScreenCoord:
+       elif self.getCoords()[1] >= bottomOfScreenCoord or self.getCoords()[1] <= topOfScreenCoord:
            self.direction *= -1
           
    def move(self, fingers): # might get out of bounds and so not turn and be unable to move and everything breaks
@@ -355,30 +355,27 @@ def summonEnemies():
 
 
 
-def gameOver():
-   pass
+
 
 
 
 
 def config_main(frame):
-   global stillAlive
-   while stillAlive:
-       summonEnemies()
-       counter = 0
-       for finger in fingers:
-           finger.retrieveCoordsFromAI()
-           finger.move()
-           if finger.isAlive() == False:
-               counter += 1
-       if counter >= 5:
-           stillAlive = False
-       for enemie in enemies:
-           enemie.move(fingers)
-           enemie.drawYourself(frame)
-       sleep(.001)
-   gameOver()
-   print("hi. you do be dead though. So sad.")
+    global stillAlive
+    summonEnemies()
+    counter = 0
+    for finger in fingers:
+        finger.retrieveCoordsFromAI()
+        finger.move()
+        if finger.isAlive() == False:
+            counter += 1
+    if counter >= 5:
+        stillAlive = False
+    for enemie in enemies:
+        enemie.move(fingers)
+        enemie.drawYourself(frame)
+    sleep(.001)
+    return stillAlive
   
 #still need: way to have things die;
   
