@@ -16,14 +16,14 @@ leftOfScreenCoord = 0
 
 
 
-chanceOfSpawningEnemy = 9 # meaning one in ten chance
+chanceOfSpawningEnemy = 100 # meaning one in 101 chance
 chanceOfHexagon = 2 # meaning one in 3
 
 
 
 
-hexagonRadius = 2
-diamondRadius = 2
+hexagonRadius = 10
+diamondRadius = 10
 circleRadius = 2
 
 
@@ -199,7 +199,7 @@ class Hexagon(Enemy):
               
    def move(self, fingers): #can fingers not be a parameter here, cause it feels like it could
        finger = self.findClosestEnemy(fingers)
-       xDistance = finger.getXCoord() -self.getXCoord()
+       xDistance = finger.getXCoord() - self.getXCoord()
        yDistance = finger.getYCoord() - self.getYCoord()
        hypotenuse = math.sqrt(xDistance ** 2 + yDistance ** 2)
        if hypotenuse != 0:

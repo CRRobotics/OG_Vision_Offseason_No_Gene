@@ -16,6 +16,7 @@ FOV_WIDTH_PIX = 640
 FOV_HEIGHT_PIX = 480
 
 currentFrame = None # Used to store the last frame that the AI read
+alive = True
 
 # Called on another thread when the AI runs, so it apparently can't display camera images, processes the result of the AI
 def processResult(result: vision.HandLandmarkerResult, output_image: mp.Image, timestamp_ms: int):
