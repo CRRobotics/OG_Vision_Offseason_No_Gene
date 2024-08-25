@@ -3,6 +3,7 @@ from mediapipe.tasks import python # Imports Python into Python
 from mediapipe.tasks.python import vision # Imports The Vision from Marvel
 import cv2 # Camera stuff
 import numpy as np # Needed to make image thing work
+from config import * # Things for the game
 from time import sleep
 from time import time
 import warnings
@@ -15,11 +16,13 @@ FOV_WIDTH_PIX = 640
 FOV_HEIGHT_PIX = 480
 
 currentFrame = None # Used to store the last frame that the AI read
+alive = True
 
 # Called on another thread when the AI runs, so it apparently can't display camera images, processes the result of the AI
 def processResult(result: vision.HandLandmarkerResult, output_image: mp.Image, timestamp_ms: int):
-    global currentFrame
+    global currentFrame, alive
     npImage = output_image.numpy_view().astype(np.uint8) # Converts from mediapipe image to numpy image that cv2 can use
+    alive = config_main(npImage)
 
     if len(result.hand_landmarks) > 0: # Checks if a hand is detected
         for i in [4, 8, 12, 16, 20]: # Thumb, pointer, middle, ring, pinkie
@@ -59,7 +62,7 @@ with vision.HandLandmarker.create_from_options(options) as detector:
     cap = waitForCam(0)
     cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
 
-    while True:
+    while alive:
         # From AprilTag code, reads cap and makes sure it's successful
         success, image = cap.read()
         if not success:
