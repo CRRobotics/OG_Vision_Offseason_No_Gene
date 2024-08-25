@@ -27,7 +27,7 @@ def processResult(result: vision.HandLandmarkerResult, output_image: mp.Image, t
             # Convert from mediapipe coordinate system to pixel coordinates
             x = int(landmark.x * FOV_WIDTH_PIX)
             y = int(landmark.y * FOV_HEIGHT_PIX)
-            npImage = cv2.circle(npImage, (x, y), 0, (0, 255, 255), 50) # Draw a circle
+            npImage = cv2.circle(npImage, (x, y), 0, (255, 255, 0), 5) # Draw a circle
 
     currentFrame = npImage # Outputs the processed frame to be displayed by the main thread
 
