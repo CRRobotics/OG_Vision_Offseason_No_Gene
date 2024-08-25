@@ -16,7 +16,6 @@ FOV_WIDTH_PIX = 640
 FOV_HEIGHT_PIX = 480
 
 currentFrame = None # Used to store the last frame that the AI read
-alive = True # Not isAlive because that might interfere with config
 
 # Called on another thread when the AI runs, so it apparently can't display camera images, processes the result of the AI
 def processResult(result: vision.HandLandmarkerResult, output_image: mp.Image, timestamp_ms: int):
@@ -30,7 +29,7 @@ def processResult(result: vision.HandLandmarkerResult, output_image: mp.Image, t
             # Convert from mediapipe coordinate system to pixel coordinates
             x = int(landmark.x * FOV_WIDTH_PIX)
             y = int(landmark.y * FOV_HEIGHT_PIX)
-            npImage = cv2.circle(npImage, (x, y), 0, (0, 255, 255), 50) # Draw a circle
+            npImage = cv2.circle(npImage, (x, y), 0, (255, 255, 0), 5) # Draw a circle
 
     currentFrame = npImage # Outputs the processed frame to be displayed by the main thread
 
