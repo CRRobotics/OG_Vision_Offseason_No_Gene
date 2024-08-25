@@ -49,7 +49,7 @@ class Finger:
        self.xCoord = 639
        self.yCoord = 638
        self.alive = True
-       self.color = color # potentially need to have a list of colors and throw an exception if it's not an accepted color
+       self.color = colors[color] # potentially need to have a list of colors and throw an exception if it's not an accepted color
       
     # accessors
     def getCoords(self):
@@ -86,12 +86,9 @@ class Finger:
     def die(self):
         self.alive = False
     
-    def move(self):
-        pass
-    
     # game methods
-    def drawYourself(self):
-        pass
+    def drawYourself(self, frame):
+        return cv2.circle(frame, (self.xCoord, self.yCoord), 0, self.color, circleRadius)
     
     def touchingEnemy(self, enemies):
         enemyXCoord = 0
@@ -341,8 +338,21 @@ def summonEnemies():
            color = colors["Green"]
        elif colorNum == 4:
            color = colors["Blue"]
-       xCoord = randint(0, rightOfScreenCoord)
-       yCoord = randint(0, bottomOfScreenCoord)
+       temp = randint(0, 1)
+       if randint(0, 1) == 0:
+        xCoord = randint(0, rightOfScreenCoord)
+        if randint(0, 1) == 0:
+            yCoord = topOfScreenCoord
+        else:
+            yCoord = bottomOfScreenCoord
+       else:
+           yCoord = randint(0, bottomOfScreenCoord)
+           if randint(0, 1) == 0:
+            xCoord = leftOfScreenCoord
+           else:
+            xCoord = rightOfScreenCoord
+
+
       
        if randint(0, chanceOfHexagon) == 0:
            tempEnemie = Hexagon(color, xCoord, yCoord)
@@ -360,13 +370,15 @@ def summonEnemies():
 
 
 
-def config_main(frame):
+def config_main(frame, fingerXCoords, fingerYCoords):
     global stillAlive
     summonEnemies()
     counter = 0
-    for finger in fingers:
-        finger.retrieveCoordsFromAI()
-        finger.move()
+    for i in range(len(fingers)):
+        finger = fingers[i]
+        finger.changeXCoord(fingerXCoords[i])
+        finger.changeYCoord(fingerYCoords[i])
+        finger.drawYourself(frame)
         if finger.isAlive() == False:
             counter += 1
     if counter >= 5:
