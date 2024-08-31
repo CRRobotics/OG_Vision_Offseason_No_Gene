@@ -18,19 +18,33 @@ FOV_HEIGHT_PIX = 480
 currentFrame = None # Used to store the last frame that the AI read
 alive = True
 
+previousTime = time()
+totalTime = 0
+
 # Called on another thread when the AI runs, so it apparently can't display camera images, processes the result of the AI
 def processResult(result: vision.HandLandmarkerResult, output_image: mp.Image, timestamp_ms: int):
-    global currentFrame, alive
+    global currentFrame, alive, previousTime, currentTime
     npImage = output_image.numpy_view().astype(np.uint8) # Converts from mediapipe image to numpy image that cv2 can use
-    alive = config_main(npImage)
-
+    currentTime = time()
+    deltaTime = currentTime - previousTime
+    previousTime = currentTime
+    
     if len(result.hand_landmarks) > 0: # Checks if a hand is detected
+        xCoords = []
+        yCoords = []
         for i in [4, 8, 12, 16, 20]: # Thumb, pointer, middle, ring, pinkie
             landmark = result.hand_landmarks[0][i] # Get info on the fingertip from the result
             # Convert from mediapipe coordinate system to pixel coordinates
             x = int(landmark.x * FOV_WIDTH_PIX)
             y = int(landmark.y * FOV_HEIGHT_PIX)
-            npImage = cv2.circle(npImage, (x, y), 0, (255, 255, 0), 5) # Draw a circle
+            # npImage = cv2.circle(npImage, (x, y), 0, (255, 255, 0), 5) # Draw a circle
+            xCoords.append(x)
+            yCoords.append(y)
+        totalTime += deltaTime
+        alive = config_main(npImage, xCoords, yCoords)
+    else:
+        npImage = cv2.rectangle(npImage, (0, 0), (FOV_WIDTH_PIX, FOV_HEIGHT_PIX), (0, 0, 0), -1)
+        npImage = cv2.putText(npImage, "Hand not detected", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 10, (255, 255, 255), 1)
 
     currentFrame = npImage # Outputs the processed frame to be displayed by the main thread
 
@@ -77,6 +91,15 @@ with vision.HandLandmarker.create_from_options(options) as detector:
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+    
+    print("You is do be ded. Sry.")
+    print("You stayed alive for {totalTime} seconds.")
+
+def startScreen():
+    pass
+
+def pauseScreen():
+    pass
 
 # Release the capture when everything is done
 cap.release()
