@@ -376,8 +376,8 @@ def config_main(frame, fingerXCoords, fingerYCoords):
     counter = 0
     for i in range(len(fingers)):
         finger = fingers[i]
-        finger.changeXCoord(fingerXCoords[i])
-        finger.changeYCoord(fingerYCoords[i])
+        finger.setXCoord(fingerXCoords[i])
+        finger.setYCoord(fingerYCoords[i])
         finger.drawYourself(frame)
         if finger.isAlive() == False:
             counter += 1
