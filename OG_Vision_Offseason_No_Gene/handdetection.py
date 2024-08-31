@@ -23,7 +23,7 @@ totalTime = 0
 
 # Called on another thread when the AI runs, so it apparently can't display camera images, processes the result of the AI
 def processResult(result: vision.HandLandmarkerResult, output_image: mp.Image, timestamp_ms: int):
-    global currentFrame, alive, previousTime, currentTime
+    global currentFrame, alive, previousTime, totalTime
     npImage = output_image.numpy_view().astype(np.uint8) # Converts from mediapipe image to numpy image that cv2 can use
     currentTime = time()
     deltaTime = currentTime - previousTime
@@ -65,7 +65,7 @@ def waitForCam(path):
             print("Waiting")
 
 # Make the AI
-baseOptions = python.BaseOptions(model_asset_path=r"OG_Vision_Offseason_No_Gene\\hand_landmarker.task")
+baseOptions = python.BaseOptions(model_asset_path=r"hand_landmarker.task")
 options = vision.HandLandmarkerOptions(base_options=baseOptions, running_mode=vision.RunningMode.LIVE_STREAM, result_callback=processResult, num_hands=1, min_hand_detection_confidence=0.2)
 
 # Use the AI
