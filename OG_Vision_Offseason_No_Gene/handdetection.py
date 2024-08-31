@@ -43,10 +43,23 @@ def processResult(result: vision.HandLandmarkerResult, output_image: mp.Image, t
         totalTime += deltaTime
         alive = config_main(npImage, xCoords, yCoords)
     else:
-        npImage = cv2.rectangle(npImage, (0, 0), (FOV_WIDTH_PIX, FOV_HEIGHT_PIX), (0, 0, 0), -1)
-        npImage = cv2.putText(npImage, "Hand not detected", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 10, (255, 255, 255), 1)
-
+        npImage = pauseScreen(npImage)
     currentFrame = npImage # Outputs the processed frame to be displayed by the main thread
+
+def startScreen(npImage):
+    npImage = cv2.rectangle(npImage, (0, 0), (FOV_WIDTH_PIX, FOV_HEIGHT_PIX), (0, 0, 0), -1)
+    npImage = cv2.putText(npImage, "Hello!!!!!!!!!", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 10, (255, 255, 255), 1)
+    return npImage
+
+def pauseScreen(npImage):
+    npImage = cv2.rectangle(npImage, (0, 0), (FOV_WIDTH_PIX, FOV_HEIGHT_PIX), (0, 0, 0), -1)
+    npImage = cv2.putText(npImage, "Hand not detected", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 10, (255, 255, 255), 1)
+    return npImage
+
+def deathScreen(npImage):
+    npImage = cv2.rectangle(npImage, (0, 0), (FOV_WIDTH_PIX, FOV_HEIGHT_PIX), (0, 0, 0), -1)
+    npImage = cv2.putText(npImage, "Oh no yiy died!", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 10, (255, 255, 255), 1)
+    return npImage
 
 # From AprilTag code
 def waitForCam(path):
@@ -95,11 +108,6 @@ with vision.HandLandmarker.create_from_options(options) as detector:
     print("You is do be ded. Sry.")
     print("You stayed alive for {totalTime} seconds.")
 
-def startScreen():
-    pass
-
-def pauseScreen():
-    pass
 
 # Release the capture when everything is done
 cap.release()
