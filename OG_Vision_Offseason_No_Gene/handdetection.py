@@ -106,7 +106,7 @@ with vision.HandLandmarker.create_from_options(options) as detector:
             break
     
     print("You is do be ded. Sry.")
-    print("You stayed alive for {totalTime} seconds.")
+    print(f"You stayed alive for {totalTime} seconds.")
 
 
 # Release the capture when everything is done

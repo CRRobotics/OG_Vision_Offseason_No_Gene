@@ -16,7 +16,7 @@ leftOfScreenCoord = 0
 
 
 
-chanceOfSpawningEnemy = 100 # meaning one in 101 chance
+chanceOfSpawningEnemy = 500 # meaning one in 101 chance
 chanceOfHexagon = 2 # meaning one in 3
 
 
@@ -24,17 +24,17 @@ chanceOfHexagon = 2 # meaning one in 3
 
 hexagonRadius = 10
 diamondRadius = 10
-circleRadius = 2
+circleRadius = 10
 
 
 
 
 colors = {
-   "Red" : (255, 0, 0),
-   "Orange" : (255, 165, 0),
-   "Yellow" : (255, 25, 0),
+   "Red" : (0, 0, 255),
+   "Orange" : (0, 165, 255),
+   "Yellow" : (0, 255, 255),
    "Green" : (0, 255, 0),
-   "Blue" : (0, 0, 255)
+   "Blue" : (255, 0, 0)
 }
 
 
