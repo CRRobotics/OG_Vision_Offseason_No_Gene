@@ -3,6 +3,7 @@ from mediapipe.tasks import python # Imports Python into Python
 from mediapipe.tasks.python import vision # Imports The Vision from Marvel
 import cv2 # Camera stuff
 import numpy as np # Needed to make image thing work
+import yaml # For the highscores file
 from config import * # Stuff for the game
 from time import sleep
 from time import time
@@ -106,6 +107,18 @@ with vision.HandLandmarker.create_from_options(options) as detector:
     
     print("You is do be ded. Sry.")
     print(f"You stayed alive for {totalTime} seconds.")
+    print("Highscores:")
+    filename = "OG_Vision_Offseason_No_Gene\\highscores.yml"
+    with open(filename, "r") as file: scores = yaml.safe_load(file)
+    for key in ["FIRST", "SECOND", "THIRD"]:
+        if scores[key] < totalTime:
+            oldHigh = scores[key]
+            scores[key] = totalTime
+            totalTime = oldHigh
+        print(key + ": " + str(scores[key]))
+    print(scores)
+    with open(filename, "w") as file: yaml.safe_dump(scores, file)
+
 
 
 # Release the capture when everything is done
