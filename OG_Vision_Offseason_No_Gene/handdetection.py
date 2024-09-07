@@ -6,8 +6,6 @@ import numpy as np # Needed to make image thing work
 from config import * # Stuff for the game
 from time import sleep
 from time import time
-import warnings
-warnings.filterwarnings("ignore")
 
 print("imports successful")
 

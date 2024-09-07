@@ -99,14 +99,18 @@ class Finger:
             if enemy.getShape() == "Hexagon":
                 if math.sqrt((enemyXCoord - self.xCoord) ** 2 + (enemyYCoord - self.yCoord) ** 2) <= circleRadius + hexagonRadius and enemy.isAlive():
                     if self.color == enemy.color:
+                        print("killed by hexagon")
                         self.alive = False
                     else:   
-                            enemy.alive = False
+                        print('killed hexagon')
+                        enemy.alive = False
             else:
-                if math.abs(self.xCoord - enemyXCoord) + math.abs(self.yCoord - enemyYCoord) <= diamondRadius + circleRadius * math.sqrt(2) and enemy.alive:
+                if abs(self.xCoord - enemyXCoord) + abs(self.yCoord - enemyYCoord) <= diamondRadius + circleRadius * math.sqrt(2) and enemy.alive:
                     if self.color == enemy.color:
+                        print("died from diamond")
                         self.alive = False
                     else:
+                        print("diamond killed")
                         enemy.alive = False
 
 
