@@ -53,12 +53,12 @@ def startScreen(npImage):
 
 def pauseScreen(npImage):
     #npImage = cv2.rectangle(npImage, (0, 0), (FOV_WIDTH_PIX, FOV_HEIGHT_PIX), (0, 0, 0), -1)
-    npImage = cv2.putText(npImage, "Hand not detected", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 10, (255, 255, 255), 1)
+    npImage = cv2.putText(npImage, "Hand not detected", (50, 200), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 1)
     return npImage
 
 def deathScreen(npImage):
     npImage = cv2.rectangle(npImage, (0, 0), (FOV_WIDTH_PIX, FOV_HEIGHT_PIX), (0, 0, 0), -1)
-    npImage = cv2.putText(npImage, "Oh no yiy died!", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 10, (255, 255, 255), 1)
+    npImage = cv2.putText(npImage, "Oh no yiy died!", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 10, (255, 255, 255), 1)#jguyuyg
     return npImage
 
 # From AprilTag code
@@ -78,7 +78,7 @@ def waitForCam(path):
             print("Waiting")
 
 # Make the AI
-baseOptions = python.BaseOptions(model_asset_path=r"hand_landmarker.task")
+baseOptions = python.BaseOptions(model_asset_path=r"OG_Vision_Offseason_No_Gene\\hand_landmarker.task")
 options = vision.HandLandmarkerOptions(base_options=baseOptions, running_mode=vision.RunningMode.LIVE_STREAM, result_callback=processResult, num_hands=1, min_hand_detection_confidence=0.2)
 
 # Use the AI
@@ -98,6 +98,7 @@ with vision.HandLandmarker.create_from_options(options) as detector:
             cap = waitForCam(0)
             cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
         
+        image = cv2.flip(image, 1)
         mpImage = mp.Image(image_format=mp.ImageFormat.SRGB, data=image) # Convert from numpy image to mediapipe image for AI
         detector.detect_async(mpImage, int(time() * 1000)) # Sends the frame to the AI, which does its thing and calls processResult with the result
         if currentFrame is not None: cv2.imshow("Frame", currentFrame) # This needs to happen on the main thread
