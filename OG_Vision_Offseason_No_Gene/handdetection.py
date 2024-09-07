@@ -52,7 +52,7 @@ def startScreen(npImage):
     return npImage
 
 def pauseScreen(npImage):
-    npImage = cv2.rectangle(npImage, (0, 0), (FOV_WIDTH_PIX, FOV_HEIGHT_PIX), (0, 0, 0), -1)
+    #npImage = cv2.rectangle(npImage, (0, 0), (FOV_WIDTH_PIX, FOV_HEIGHT_PIX), (0, 0, 0), -1)
     npImage = cv2.putText(npImage, "Hand not detected", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 10, (255, 255, 255), 1)
     return npImage
 
