@@ -103,7 +103,7 @@ class Finger:
                     else:   
                             enemy.alive = False
             else:
-                if math.abs(self.xCoord - enemyXCoord) + math.abs(self.yCoord - enemyYCoord) <= diamondRadius + circleRadius * math.sqrt(2):
+                if math.abs(self.xCoord - enemyXCoord) + math.abs(self.yCoord - enemyYCoord) <= diamondRadius + circleRadius * math.sqrt(2) and enemy.alive:
                     if self.color == enemy.color:
                         self.alive = False
                     else:
@@ -186,12 +186,13 @@ class Hexagon(Enemy):
        lowestDistance = 639000
        closestFinger = fingers[0]
        for finger in fingers:
-           xCoord = finger.getXCoord()
-           yCoord = finger.getYCoord()
-           distance = math.sqrt(xCoord ** 2 + yCoord ** 2)
-           if lowestDistance > distance:
-               lowestDistance = distance
-               closestFinger = finger
+           if self.color != finger.color and finger.alive: 
+            xCoord = finger.getXCoord()
+            yCoord = finger.getYCoord()
+            distance = math.sqrt(xCoord ** 2 + yCoord ** 2)
+            if lowestDistance > distance:
+                lowestDistance = distance
+                closestFinger = finger
        return closestFinger
               
    def move(self, fingers): #can fingers not be a parameter here, cause it feels like it could
@@ -376,16 +377,20 @@ def config_main(frame, fingerXCoords, fingerYCoords):
     counter = 0
     for i in range(len(fingers)):
         finger = fingers[i]
-        finger.setXCoord(fingerXCoords[i])
-        finger.setYCoord(fingerYCoords[i])
-        finger.drawYourself(frame)
+        if finger.alive:
+            finger.setXCoord(fingerXCoords[i])
+            finger.setYCoord(fingerYCoords[i])
+            finger.touchingEnemy(enemies)
         if finger.isAlive() == False:
             counter += 1
+        else:
+            finger.drawYourself(frame)
     if counter >= 5:
         stillAlive = False
     for enemie in enemies:
-        enemie.move(fingers)
-        enemie.drawYourself(frame)
+        if enemie.alive:
+            enemie.move(fingers)
+            enemie.drawYourself(frame)
     sleep(.001)
     return stillAlive
   
