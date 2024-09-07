@@ -16,7 +16,7 @@ leftOfScreenCoord = 0
 
 
 
-chanceOfSpawningEnemy = 500 # meaning one in 101 chance
+chanceOfSpawningEnemy = 50 # meaning one in 101 chance
 chanceOfHexagon = 2 # meaning one in 3
 
 
@@ -333,6 +333,7 @@ stillAlive = True
 def summonEnemies():
    global enemies
    if randint(0, chanceOfSpawningEnemy) == 0:
+       print("An enemy has appeared!")
        colorNum = randint(0, 4)
        color = colors["Red"]
        if colorNum == 1:
